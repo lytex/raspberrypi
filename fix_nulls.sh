@@ -11,7 +11,8 @@ for file in $nulls; do
     echo "[$(date --rfc-3339=seconds)]: Trying to recover file \"$file\""
     for prefix in $folders; do
         candidate="/media/pi/BlueBox/$prefix/media/pi/Linux Backup/$file"
-        if sudo ls "$candidate" > /dev/null && ! rg -a "\x00" "_" && (($(ls -l "$candidate" | awk '{print $5}') > 3)) ; then
+        if sudo ls "$candidate" > /dev/null && ! sudo rg -aq --no-ignore --hidden --multiline --null-data --no-mmap --max-filesize 512M -j2  "\A\x00+\z
+" "$candidate" && (($(sudo ls -l "$candidate" | awk '{print $5}') > 3)) ; then
             echo "[$(date --rfc-3339=seconds)]: File found: $candidate"
             found=true
             echo "[$(date --rfc-3339=seconds)]: " Copying from "$candidate" to "/media/pi/Linux Backup/$file"
